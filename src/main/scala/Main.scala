@@ -57,8 +57,10 @@ object Main {
     
     if (won(map)) {
       countsWins += 1
-      printGrid(map)
-      println(s"SUCCESS ${countsWins}!")
+      if(countsWins % 100 == 1) {
+        printGrid(map)
+        println(s"SUCCESS ${countsWins}!")
+      }
     } else {
       val playable = coordsInMap.view.flatMap {
         case originCoord if hasPeg(map, originCoord) =>
