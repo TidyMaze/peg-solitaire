@@ -31,17 +31,19 @@ object Main {
 
   val seen: scala.collection.mutable.Set[Int] = scala.collection.mutable.Set.empty[Int]
   var countsWins = 0
+  var countsSeen = 0
   var best = 35
 
   def solveGrid(map: Grid): Unit = {
     if (seen.contains(map.hashCode())) {
+      countsSeen += 1
       return
     }
 
     if (won(map)) {
       countsWins += 1
       printGrid(map)
-      println(s"SUCCESS ${countsWins}!")
+      println(s"SUCCESS ${countsWins}! Count seen ${countsSeen} out of ${seen.size}")
     } else {
       seen.add(map.hashCode())
 
