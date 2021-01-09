@@ -35,22 +35,32 @@ object Main {
     solveGrid(map)
   }
 
-  def won(g: Grid): Boolean = g.flatten.count(_ == 'o') == 1
+  def won(g: Grid): Boolean = score(g) == 1
+  def score(g: Grid): Int = g.flatten.count(_ == 'o')
 
   val seen: scala.collection.mutable.Set[Int] = scala.collection.mutable.Set.empty[Int]
   var countsWins = 0
+  var best = 35
 
   private def solveGrid(map: Array[Array[Char]]): Unit = {
     if (seen.contains(map.hashCode())) {
       return
     }
-
+    
     if (won(map)) {
       countsWins += 1
       printGrid(map)
       println(s"SUCCESS ${countsWins}!")
     } else {
       seen.add(map.hashCode())
+      
+      val sc = score(map)
+      
+      if(sc < best) {
+        best = sc
+        println(s"best ${best}")
+      }
+      
       val playable = (0 until map.size) flatMap { i =>
         (0 until map.size) flatMap { j =>
           if (hasPeg(map, j, i)) {
