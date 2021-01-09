@@ -36,46 +36,50 @@ object Main {
   }
 
   def won(g: Grid): Boolean = score(g) == 1
+
   def score(g: Grid): Int = g.flatten.count(_ == 'o')
 
   val seen: scala.collection.mutable.Set[Int] = scala.collection.mutable.Set.empty[Int]
   var countsWins = 0
   var best = 35
 
+  def allCoords(map: Grid): Seq[Coord] = for {
+    i <- (0 until map.size)
+    j <- (0 until map.size)
+  } yield Coord(j, i)
+
   private def solveGrid(map: Array[Array[Char]]): Unit = {
     if (seen.contains(map.hashCode())) {
       return
     }
-    
+
     if (won(map)) {
       countsWins += 1
       printGrid(map)
       println(s"SUCCESS ${countsWins}!")
     } else {
       seen.add(map.hashCode())
-      
+
       val sc = score(map)
-      
-      if(sc < best) {
+
+      if (sc < best) {
         best = sc
         println(s"best ${best}")
       }
-      
-      val playable = (0 until map.size) flatMap { i =>
-        (0 until map.size) flatMap { j =>
-          if (hasPeg(map, j, i)) {
-            offsets.flatMap { o =>
-              val (dx, dy) = addOffset(j, i, o)
-              val (rx, ry) = addOffset(dx, dy, o)
-              if (hasPeg(map, dx, dy) && isFree(map, rx, ry)) {
-                Some(Action(Coord(j, i), Coord(rx, ry), Coord(dx, dy)))
-              } else {
-                None
-              }
+
+      val playable = allCoords(map).flatMap { case Coord(j, i) =>
+        if (hasPeg(map, j, i)) {
+          offsets.flatMap { o =>
+            val (dx, dy) = addOffset(j, i, o)
+            val (rx, ry) = addOffset(dx, dy, o)
+            if (hasPeg(map, dx, dy) && isFree(map, rx, ry)) {
+              Some(Action(Coord(j, i), Coord(rx, ry), Coord(dx, dy)))
+            } else {
+              None
             }
-          } else {
-            Nil
           }
+        } else {
+          Nil
         }
       }
 
