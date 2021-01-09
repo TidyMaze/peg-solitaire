@@ -37,13 +37,19 @@ object Main {
 
   def won(g: Grid): Boolean = g.flatten.count(_ == 'o') == 1
 
+  val seen: scala.collection.mutable.Set[Int] = scala.collection.mutable.Set.empty[Int]
+
   private def solveGrid(map: Array[Array[Char]]): Unit = {
-    if(won(map)){
+    if (seen.contains(map.hashCode())) {
+      return
+    }
+
+    if (won(map)) {
       printGrid(map)
       println("SUCCESS!")
       System.exit(0)
     } else {
-
+      seen.add(map.hashCode())
       val playable = (0 until map.size) flatMap { i =>
         (0 until map.size) flatMap { j =>
           if (hasPeg(map, j, i)) {
@@ -62,10 +68,10 @@ object Main {
         }
       }
 
-      if(playable.size == 0){
+      if (playable.size == 0) {
         printGrid(map)
       }
-      
+
       playable foreach { a =>
         val resGrid = playAction(map, a)
         solveGrid(resGrid)
