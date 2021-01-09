@@ -60,13 +60,6 @@ object Main {
     } else {
       seen.add(map.hashCode())
 
-      val sc = score(map)
-
-      if (sc < best) {
-        best = sc
-        println(s"best ${best}")
-      }
-
       val playable = coordsInMap.flatMap { 
         case originCoord if hasPeg(map, originCoord) => 
           offsets.flatMap(getEventualAction(map, originCoord, _))
