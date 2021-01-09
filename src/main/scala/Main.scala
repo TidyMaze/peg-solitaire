@@ -1,10 +1,10 @@
 import scala.language.postfixOps
 
 object Main {
-  
+
   type Grid = Array[Array[Char]]
   case class Coord(x: Int, y: Int)
-  
+
   case class Action(from: Coord, to: Coord, over: Coord)
 
   val showGrid: Grid => String = _.map(_.mkString("")).mkString("\n")
@@ -51,23 +51,23 @@ object Main {
     }
 
     println(playable)
-    
+
     playable foreach { a =>
       val cloned = cloneGrid(map)
       val resGrid = playAction(cloned, a)
       printGrid(resGrid)
     }
   }
-  
+
   def playAction(g: Grid, a: Action): Grid = {
     g(a.from.y)(a.from.x) = '.'
     g(a.to.y)(a.to.x) = 'o'
     g(a.over.y)(a.over.x) = 'o'
     g
-  } 
+  }
 
   def cloneGrid(g: Grid): Grid = g.map(_.clone())
-  
+
   def isFree(map: Array[Array[Char]], x: Int, y: Int): Boolean = inMap(map, x, y) && map(y)(x) == '.'
 
   def hasPeg(map: Array[Array[Char]], x: Int, y: Int): Boolean = inMap(map, x, y) && map(y)(x) == 'o'
