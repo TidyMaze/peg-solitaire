@@ -12,7 +12,7 @@ object Main {
     showGrid andThen println andThen (_ => println)
   }
 
-  val offsets = Seq((0, -1), (0, 1), (-1, 0), (1, 0))
+  val offsets = Seq(Coord(0, -1), Coord(0, 1), Coord(-1, 0), Coord(1, 0))
 
   def main(args: Array[String]): Unit = {
 
@@ -67,13 +67,13 @@ object Main {
         println(s"best ${best}")
       }
 
-      val playable = allCoords(map).flatMap { case Coord(j, i) =>
-        if (hasPeg(map, j, i)) {
+      val playable = allCoords(map).flatMap { case c =>
+        if (hasPeg(map, c)) {
           offsets.flatMap { o =>
-            val (dx, dy) = addOffset(j, i, o)
-            val (rx, ry) = addOffset(dx, dy, o)
-            if (hasPeg(map, dx, dy) && isFree(map, rx, ry)) {
-              Some(Action(Coord(j, i), Coord(rx, ry), Coord(dx, dy)))
+            val d = addOffset(c, o)
+            val r = addOffset(d, o)
+            if (hasPeg(map, d) && isFree(map, r)) {
+              Some(Action(c, r, d))
             } else {
               None
             }
@@ -100,11 +100,11 @@ object Main {
 
   def cloneGrid(g: Grid): Grid = g.map(_.clone())
 
-  def isFree(map: Array[Array[Char]], x: Int, y: Int): Boolean = inMap(map, x, y) && map(y)(x) == '.'
+  def isFree(map: Array[Array[Char]], c: Coord): Boolean = inMap(map, c) && map(c.y)(c.x) == '.'
 
-  def hasPeg(map: Array[Array[Char]], x: Int, y: Int): Boolean = inMap(map, x, y) && map(y)(x) == 'o'
+  def hasPeg(map: Array[Array[Char]], c: Coord): Boolean = inMap(map, c) && map(c.y)(c.x) == 'o'
 
-  def addOffset(x: Int, y: Int, o: (Int, Int)): (Int, Int) = (x + o._1, y + o._2)
+  def addOffset(coord: Coord, offset: Coord): Coord = Coord(coord.x + offset.x, coord.y + offset.y)
 
-  val inMap = (map: Grid, x: Int, y: Int) => x >= 0 && x < map.size && y >= 0 && y < map.size
+  val inMap = (map: Grid, c: Coord) => c.x >= 0 && c.x < map.size && c.y >= 0 && c.y < map.size
 }
