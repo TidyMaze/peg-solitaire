@@ -22,10 +22,10 @@ object Main {
 
     val map = englishMapRaw.split("\n").map(_.toCharArray)
 
-    printGrid(map)
+//    printGrid(map)
 
     map(3)(3) = '.'
-    printGrid(map)
+    //    printGrid(map)
 
     val coordsInMap = allCoords(map)
 
@@ -41,26 +41,26 @@ object Main {
   var countNodes = 0
   var start = Instant.now()
 
+  def hashGrid(g: Grid) = showGrid(g).hashCode()
+
   def solveGrid(coordsInMap: Seq[Coord], map: Grid): Unit = {
     countNodes += 1
-    if((countNodes % 100000) == 0){
+    if ((countNodes % 100000) == 0) {
       val elapsedMillis = Instant.now().toEpochMilli - start.toEpochMilli
-      println(s"Speed: ${countNodes / elapsedMillis}K op/s out of ${countNodes / 1000}K nodes. Count seen ${countsSeen} out of ${seen.size / 1000}K nodes")
+      println(s"Speed: ${countNodes / elapsedMillis}K op/s out of ${countNodes / 1000}K nodes. Count seen ${countsSeen/1000}K out of ${seen.size / 1000}K nodes")
     }
 
-    if (seen.contains(map.hashCode())) {
+    if (seen.contains(hashGrid(map))) {
       countsSeen += 1
       return
     }
 
-    seen.add(map.hashCode())
-    
+    seen.add(hashGrid(map))
+
     if (won(map)) {
       countsWins += 1
-      if(countsWins % 100 == 1) {
-        printGrid(map)
-        println(s"SUCCESS ${countsWins}!")
-      }
+      printGrid(map)
+      println(s"SUCCESS ${countsWins}!")
     } else {
       val playable = coordsInMap.view.flatMap {
         case originCoord if hasPeg(map, originCoord) =>
@@ -69,7 +69,10 @@ object Main {
       }
 
       playable foreach { a =>
-        solveGrid(coordsInMap, playAction(map, a))
+                playActionMut(map, a)
+                solveGrid(coordsInMap, map)
+                revertActionMut(map, a)
+//        solveGrid(coordsInMap, playAction(map, a))
       }
     }
   }
