@@ -34,12 +34,12 @@ object Main {
 
     solveGrid(map)
   }
-  
+
   def won(g: Grid): Boolean = g.flatten.count(_ == 'o') == 1
-  
+
   private def solveGrid(map: Array[Array[Char]]): Unit = {
-    printGrid(map)
     if(won(map)){
+      printGrid(map)
       println("SUCCESS!")
       System.exit(0)
     } else {
@@ -62,6 +62,10 @@ object Main {
         }
       }
 
+      if(playable.size == 0){
+        printGrid(map)
+      }
+      
       playable foreach { a =>
         val resGrid = playAction(map, a)
         solveGrid(resGrid)
