@@ -60,7 +60,7 @@ object Main {
     } else {
       seen.add(map.hashCode())
 
-      val playable = coordsInMap.flatMap { 
+      val playable = coordsInMap.view.flatMap { 
         case originCoord if hasPeg(map, originCoord) => 
           offsets.flatMap(getEventualAction(map, originCoord, _))
         case _ => Nil
@@ -72,7 +72,7 @@ object Main {
     }
   }
 
-  private def getEventualAction(map: Grid, originCoord: Coord, direction: Coord): Option[Action] = {
+  def getEventualAction(map: Grid, originCoord: Coord, direction: Coord): Option[Action] = {
     val jumpedCoord = addOffset(originCoord, direction)
     val landingCoord = addOffset(jumpedCoord, direction)
     if (hasPeg(map, jumpedCoord) && isFree(map, landingCoord)) {
