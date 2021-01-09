@@ -29,6 +29,7 @@ object Main {
     solveGrid(map)
   }
 
+  // avoid avaluating an already-met state
   val seen: scala.collection.mutable.Set[Int] = scala.collection.mutable.Set.empty[Int]
   var countsWins = 0
   var countsSeen = 0
