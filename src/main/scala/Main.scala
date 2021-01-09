@@ -53,13 +53,13 @@ object Main {
       return
     }
 
+    seen.add(map.hashCode())
+    
     if (won(map)) {
       countsWins += 1
       printGrid(map)
       println(s"SUCCESS ${countsWins}!")
     } else {
-      seen.add(map.hashCode())
-
       val playable = coordsInMap.view.flatMap {
         case originCoord if hasPeg(map, originCoord) =>
           offsets.flatMap(getEventualAction(map, originCoord, _))
@@ -100,6 +100,18 @@ object Main {
     resG(a.to.y)(a.to.x) = 'o'
     resG(a.over.y)(a.over.x) = '.'
     resG
+  }
+
+  val playActionMut = (g: Grid, a: Action) => {
+    g(a.from.y)(a.from.x) = '.'
+    g(a.to.y)(a.to.x) = 'o'
+    g(a.over.y)(a.over.x) = '.'
+  }
+  
+  val revertActionMut = (g: Grid, a: Action) => {
+    g(a.from.y)(a.from.x) = 'o'
+    g(a.to.y)(a.to.x) = '.'
+    g(a.over.y)(a.over.x) = 'o'
   }
 
   val cloneGrid: Grid => Grid = _.map(_.clone())
