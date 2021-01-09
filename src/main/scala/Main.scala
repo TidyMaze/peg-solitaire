@@ -53,17 +53,17 @@ object Main {
     println(playable)
 
     playable foreach { a =>
-      val cloned = cloneGrid(map)
-      val resGrid = playAction(cloned, a)
+      val resGrid = playAction(map, a)
       printGrid(resGrid)
     }
   }
 
   def playAction(g: Grid, a: Action): Grid = {
-    g(a.from.y)(a.from.x) = '.'
-    g(a.to.y)(a.to.x) = 'o'
-    g(a.over.y)(a.over.x) = 'o'
-    g
+    val resG = cloneGrid(g)
+    resG(a.from.y)(a.from.x) = '.'
+    resG(a.to.y)(a.to.x) = 'o'
+    resG(a.over.y)(a.over.x) = 'o'
+    resG
   }
 
   def cloneGrid(g: Grid): Grid = g.map(_.clone())
