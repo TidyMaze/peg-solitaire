@@ -45,7 +45,7 @@ object Main {
     countNodes += 1
     if((countNodes % 100000) == 0){
       val elapsedMillis = Instant.now().toEpochMilli - start.toEpochMilli
-      println(s"Speed: ${countNodes / elapsedMillis}K op/s out of ${countNodes / 1000}K nodes. Count seen ${countsSeen} out of ${seen.size / 1000}K")
+      println(s"Speed: ${countNodes / elapsedMillis}K op/s out of ${countNodes / 1000}K nodes. Count seen ${countsSeen} out of ${seen.size / 1000}K nodes")
     }
 
     if (seen.contains(map.hashCode())) {
