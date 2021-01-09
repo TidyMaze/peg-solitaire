@@ -38,6 +38,7 @@ object Main {
   def won(g: Grid): Boolean = g.flatten.count(_ == 'o') == 1
 
   val seen: scala.collection.mutable.Set[Int] = scala.collection.mutable.Set.empty[Int]
+  var countsWins = 0
 
   private def solveGrid(map: Array[Array[Char]]): Unit = {
     if (seen.contains(map.hashCode())) {
@@ -45,9 +46,9 @@ object Main {
     }
 
     if (won(map)) {
+      countsWins += 1
       printGrid(map)
-      println("SUCCESS!")
-      System.exit(0)
+      println(s"SUCCESS ${countsWins}!")
     } else {
       seen.add(map.hashCode())
       val playable = (0 until map.size) flatMap { i =>
@@ -66,10 +67,6 @@ object Main {
             Nil
           }
         }
-      }
-
-      if (playable.size == 0) {
-        printGrid(map)
       }
 
       playable foreach { a =>
