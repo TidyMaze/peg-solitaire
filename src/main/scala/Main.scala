@@ -60,8 +60,8 @@ object Main {
     } else {
       seen.add(map.hashCode())
 
-      val playable = coordsInMap.view.flatMap { 
-        case originCoord if hasPeg(map, originCoord) => 
+      val playable = coordsInMap.view.flatMap {
+        case originCoord if hasPeg(map, originCoord) =>
           offsets.flatMap(getEventualAction(map, originCoord, _))
         case _ => Nil
       }
