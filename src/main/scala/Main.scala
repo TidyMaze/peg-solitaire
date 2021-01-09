@@ -28,7 +28,7 @@ object Main {
     printGrid(map)
 
     val coordsInMap = allCoords(map)
-    
+
     solveGrid(coordsInMap, map)
   }
 
@@ -37,7 +37,7 @@ object Main {
   var countsWins = 0
   var countsSeen = 0
   var best = 35
-  
+
   var countNodes = 0
   var start = Instant.now()
 
@@ -47,7 +47,7 @@ object Main {
       val elapsedMillis = Instant.now().toEpochMilli - start.toEpochMilli
       println(s"Speed: ${countNodes.toDouble * 1000 / elapsedMillis.toDouble} op/s out of $countNodes nodes")
     }
-    
+
     if (seen.contains(map.hashCode())) {
       countsSeen += 1
       return
@@ -67,25 +67,25 @@ object Main {
         println(s"best ${best}")
       }
 
-      val playable = coordsInMap.flatMap { case originCoord =>
-        if (hasPeg(map, originCoord)) {
-          offsets.flatMap { direction =>
-            val jumpedCoord = addOffset(originCoord, direction)
-            val landingCoord = addOffset(jumpedCoord, direction)
-            if (hasPeg(map, jumpedCoord) && isFree(map, landingCoord)) {
-              Some(Action(originCoord, landingCoord, jumpedCoord))
-            } else {
-              None
-            }
-          }
-        } else {
-          Nil
-        }
+      val playable = coordsInMap.flatMap { 
+        case originCoord if hasPeg(map, originCoord) => 
+          offsets.flatMap(getEventualAction(map, originCoord, _))
+        case _ => Nil
       }
 
       playable foreach { a =>
         solveGrid(coordsInMap, playAction(map, a))
       }
+    }
+  }
+
+  private def getEventualAction(map: Grid, originCoord: Coord, direction: Coord): Option[Action] = {
+    val jumpedCoord = addOffset(originCoord, direction)
+    val landingCoord = addOffset(jumpedCoord, direction)
+    if (hasPeg(map, jumpedCoord) && isFree(map, landingCoord)) {
+      Some(Action(originCoord, landingCoord, jumpedCoord))
+    } else {
+      None
     }
   }
 
