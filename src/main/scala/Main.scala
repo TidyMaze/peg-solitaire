@@ -67,13 +67,13 @@ object Main {
         println(s"best ${best}")
       }
 
-      val playable = allCoords(map).flatMap { case c =>
-        if (hasPeg(map, c)) {
-          offsets.flatMap { o =>
-            val d = addOffset(c, o)
-            val r = addOffset(d, o)
-            if (hasPeg(map, d) && isFree(map, r)) {
-              Some(Action(c, r, d))
+      val playable = allCoords(map).flatMap { case originCoord =>
+        if (hasPeg(map, originCoord)) {
+          offsets.flatMap { direction =>
+            val jumpedCoord = addOffset(originCoord, direction)
+            val landingCoord = addOffset(jumpedCoord, direction)
+            if (hasPeg(map, jumpedCoord) && isFree(map, landingCoord)) {
+              Some(Action(originCoord, landingCoord, jumpedCoord))
             } else {
               None
             }
