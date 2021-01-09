@@ -4,7 +4,9 @@ import scala.language.postfixOps
 object Main {
 
   type Grid = Array[Array[Char]]
+
   case class Coord(x: Int, y: Int)
+
   case class Action(from: Coord, to: Coord, over: Coord)
 
   val offsets = Seq(Coord(0, -1), Coord(0, 1), Coord(-1, 0), Coord(1, 0))
@@ -22,7 +24,7 @@ object Main {
 
     val map = englishMapRaw.split("\n").map(_.toCharArray)
 
-//    printGrid(map)
+    //    printGrid(map)
 
     map(3)(3) = '.'
     //    printGrid(map)
@@ -47,7 +49,7 @@ object Main {
     countNodes += 1
     if ((countNodes % 100000) == 0) {
       val elapsedMillis = Instant.now().toEpochMilli - start.toEpochMilli
-      println(s"Speed: ${countNodes / elapsedMillis}K op/s out of ${countNodes / 1000}K nodes. Count seen ${countsSeen/1000}K out of ${seen.size / 1000}K nodes")
+      println(s"Speed: ${countNodes / elapsedMillis}K op/s out of ${countNodes / 1000}K nodes. Count seen ${countsSeen / 1000}K out of ${seen.size / 1000}K nodes")
     }
 
     if (seen.contains(hashGrid(map))) {
@@ -69,10 +71,10 @@ object Main {
       }
 
       playable foreach { a =>
-                playActionMut(map, a)
-                solveGrid(coordsInMap, map)
-                revertActionMut(map, a)
-//        solveGrid(coordsInMap, playAction(map, a))
+        playActionMut(map, a)
+        solveGrid(coordsInMap, map)
+        revertActionMut(map, a)
+        // solveGrid(coordsInMap, playAction(map, a))
       }
     }
   }
@@ -112,7 +114,7 @@ object Main {
     g(a.to.y)(a.to.x) = 'o'
     g(a.over.y)(a.over.x) = '.'
   }
-  
+
   val revertActionMut = (g: Grid, a: Action) => {
     g(a.from.y)(a.from.x) = 'o'
     g(a.to.y)(a.to.x) = '.'
