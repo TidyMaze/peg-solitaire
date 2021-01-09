@@ -1,3 +1,4 @@
+import java.time.Instant
 import scala.language.postfixOps
 
 object Main {
@@ -34,8 +35,19 @@ object Main {
   var countsWins = 0
   var countsSeen = 0
   var best = 35
+  
+  var countNodes = 0
+  var start = Instant.now()
+  
+//  val coordsInMap = allCoords(map)
 
   def solveGrid(map: Grid): Unit = {
+    countNodes += 1
+    if((countNodes % 100000) == 0){
+      val elapsedMillis = Instant.now().toEpochMilli - start.toEpochMilli
+      println(s"Speed: ${countNodes.toDouble * 1000 / elapsedMillis.toDouble} op/s out of $countNodes nodes")
+    }
+    
     if (seen.contains(map.hashCode())) {
       countsSeen += 1
       return
