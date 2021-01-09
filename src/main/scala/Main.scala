@@ -45,7 +45,7 @@ object Main {
     countNodes += 1
     if((countNodes % 100000) == 0){
       val elapsedMillis = Instant.now().toEpochMilli - start.toEpochMilli
-      println(s"Speed: ${countNodes.toDouble * 1000 / elapsedMillis.toDouble} op/s out of $countNodes nodes")
+      println(s"Speed: ${countNodes / elapsedMillis}K op/s out of ${countNodes / 1000}K nodes. Count seen ${countsSeen} out of ${seen.size / 1000}K")
     }
 
     if (seen.contains(map.hashCode())) {
@@ -56,7 +56,7 @@ object Main {
     if (won(map)) {
       countsWins += 1
       printGrid(map)
-      println(s"SUCCESS ${countsWins}! Count seen ${countsSeen} out of ${seen.size}")
+      println(s"SUCCESS ${countsWins}!")
     } else {
       seen.add(map.hashCode())
 
