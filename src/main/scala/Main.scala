@@ -27,7 +27,9 @@ object Main {
     map(3)(3) = '.'
     printGrid(map)
 
-    solveGrid(map)
+    val coordsInMap = allCoords(map)
+    
+    solveGrid(coordsInMap, map)
   }
 
   // avoid avaluating an already-met state
@@ -38,10 +40,8 @@ object Main {
   
   var countNodes = 0
   var start = Instant.now()
-  
-//  val coordsInMap = allCoords(map)
 
-  def solveGrid(map: Grid): Unit = {
+  def solveGrid(coordsInMap: Seq[Coord], map: Grid): Unit = {
     countNodes += 1
     if((countNodes % 100000) == 0){
       val elapsedMillis = Instant.now().toEpochMilli - start.toEpochMilli
@@ -67,7 +67,7 @@ object Main {
         println(s"best ${best}")
       }
 
-      val playable = allCoords(map).flatMap { case originCoord =>
+      val playable = coordsInMap.flatMap { case originCoord =>
         if (hasPeg(map, originCoord)) {
           offsets.flatMap { direction =>
             val jumpedCoord = addOffset(originCoord, direction)
@@ -84,7 +84,7 @@ object Main {
       }
 
       playable foreach { a =>
-        solveGrid(playAction(map, a))
+        solveGrid(coordsInMap, playAction(map, a))
       }
     }
   }
