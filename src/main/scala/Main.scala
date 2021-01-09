@@ -32,29 +32,40 @@ object Main {
     map(3)(3) = '.'
     printGrid(map)
 
-    val playable = (0 until map.size) flatMap { i =>
-      (0 until map.size) flatMap { j =>
-        if (hasPeg(map, j, i)) {
-          offsets.flatMap { o =>
-            val (dx, dy) = addOffset(j, i, o)
-            val (rx, ry) = addOffset(dx, dy, o)
-            if (hasPeg(map, dx, dy) && isFree(map, rx, ry)) {
-              Some(Action(Coord(j, i), Coord(rx, ry), Coord(dx, dy)))
-            } else {
-              None
+    solveGrid(map)
+  }
+  
+  def won(g: Grid): Boolean = g.flatten.count(_ == 'o') == 1
+  
+  private def solveGrid(map: Array[Array[Char]]): Unit = {
+    printGrid(map)
+    if(won(map)){
+      println("SUCCESS!")
+      System.exit(0)
+    } else {
+
+      val playable = (0 until map.size) flatMap { i =>
+        (0 until map.size) flatMap { j =>
+          if (hasPeg(map, j, i)) {
+            offsets.flatMap { o =>
+              val (dx, dy) = addOffset(j, i, o)
+              val (rx, ry) = addOffset(dx, dy, o)
+              if (hasPeg(map, dx, dy) && isFree(map, rx, ry)) {
+                Some(Action(Coord(j, i), Coord(rx, ry), Coord(dx, dy)))
+              } else {
+                None
+              }
             }
+          } else {
+            Nil
           }
-        } else {
-          Nil
         }
       }
-    }
 
-    println(playable)
-
-    playable foreach { a =>
-      val resGrid = playAction(map, a)
-      printGrid(resGrid)
+      playable foreach { a =>
+        val resGrid = playAction(map, a)
+        solveGrid(resGrid)
+      }
     }
   }
 
@@ -62,7 +73,7 @@ object Main {
     val resG = cloneGrid(g)
     resG(a.from.y)(a.from.x) = '.'
     resG(a.to.y)(a.to.x) = 'o'
-    resG(a.over.y)(a.over.x) = 'o'
+    resG(a.over.y)(a.over.x) = '.'
     resG
   }
 
