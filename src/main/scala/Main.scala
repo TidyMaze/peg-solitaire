@@ -53,28 +53,28 @@ object Main {
 
   def solveGrid(coordsInMap: Seq[Coord], map: Grid, hist: ListBuffer[Action]): Unit = {
     countNodes += 1
-    if ((seen.size % PurgeTrigger) == 0) {
+    if ((countNodes % PurgeTrigger) == 0) {
       val elapsedMillis = Instant.now().toEpochMilli - start.toEpochMilli
       println(s"Speed: ${countNodes / elapsedMillis}K op/s out of ${countNodes / 1000}K nodes. Count seen ${countsSeen / 1000}K out of ${seen.size / 1000}K nodes")
 
-      if(seen.size > 0) {
-
-        val keep = PurgeTrigger / 2
-
-        val sorted = seen.toSeq.sortBy(_._2)(Ordering.Int.reverse)
-        seen = mutable.HashMap(sorted.take(keep):_*)
-        println(seen.size + " and best " + sorted.head._2)
-      }
+//      if(seen.size > 0) {
+//
+//        val keep = PurgeTrigger / 2
+//
+//        val sorted = seen.toSeq.sortBy(_._2)(Ordering.Int.reverse)
+//        seen = mutable.HashMap(sorted.take(keep):_*)
+//        println(seen.size + " and best " + sorted.head._2)
+//      }
     }
 
-    val hash = hashGrid(map)
-    val current = seen.getOrElse(hash, 0)
-    seen.update(hash, current + 1)
-
-    if (current > 0) {
-      countsSeen += 1
-      return
-    }
+//    val hash = hashGrid(map)
+//    val current = seen.getOrElse(hash, 0)
+//    seen.update(hash, current + 1)
+//
+//    if (current > 0) {
+//      countsSeen += 1
+//      return
+//    }
 
     if (won(map)) {
       countsWins += 1
