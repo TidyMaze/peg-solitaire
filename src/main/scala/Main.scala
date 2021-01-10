@@ -49,7 +49,21 @@ object Main {
   var countNodes = 0
   var start = Instant.now()
 
-  def hashGrid(g: Grid) = showGrid(g).hashCode()
+  def hashGrid(g: Grid) = {
+    val sb = new StringBuilder()
+    var i = 0
+    var j = 0
+    while (i < g.size) {
+      j = 0
+      while (j < g.head.size) {
+        sb.append(g(i)(j))
+        j += 1
+      }
+      i += 1
+    }
+    sb.toString()
+    sb.hashCode()
+  }
 
   def solveGrid(coordsInMap: Seq[Coord], map: Grid, hist: ListBuffer[Action]): Unit = {
     countNodes += 1
@@ -116,7 +130,7 @@ object Main {
     }
   }
 
-  def showGrid(g: Grid): String = {
+  def printGrid(g: Grid) = {
     val sb = new StringBuilder()
     var i = 0
     var j = 0
@@ -129,10 +143,8 @@ object Main {
       sb.append("\n")
       i += 1
     }
-    sb.toString()
+    println(sb.toString())
   }
-
-  val printGrid = showGrid andThen println andThen (_ => println)
 
   val allCoords = (map: Grid) => for {
     i <- (0 until map.size)
