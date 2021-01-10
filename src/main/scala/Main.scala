@@ -89,10 +89,23 @@ object Main {
               val landingCoord = addOffset(jumpedCoord, o)
               if (isFree(map, landingCoord)) {
                 val a = Action(originCoord, landingCoord, jumpedCoord)
-                playActionMut(map, a)
+                // play action
+                map(originCoord.y)(originCoord.x) = '.'
+                map(landingCoord.y)(landingCoord.x) = 'o'
+                map(jumpedCoord.y)(jumpedCoord.x) = '.'
+                
+                // add history
                 hist.addOne(a)
+                
+                // solve recursively
                 solveGrid(coordsInMap, map, hist)
-                revertActionMut(map, a)
+                
+                // revert action
+                map(originCoord.y)(originCoord.x) = 'o'
+                map(landingCoord.y)(landingCoord.x) = '.'
+                map(jumpedCoord.y)(jumpedCoord.x) = 'o'
+                
+                // revert history
                 hist.remove(hist.size - 1)
                 // solveGrid(coordsInMap, playAction(map, a))
               }
@@ -149,18 +162,6 @@ object Main {
     resG(a.to.y)(a.to.x) = 'o'
     resG(a.over.y)(a.over.x) = '.'
     resG
-  }
-
-  val playActionMut = (g: Grid, a: Action) => {
-    g(a.from.y)(a.from.x) = '.'
-    g(a.to.y)(a.to.x) = 'o'
-    g(a.over.y)(a.over.x) = '.'
-  }
-
-  val revertActionMut = (g: Grid, a: Action) => {
-    g(a.from.y)(a.from.x) = 'o'
-    g(a.to.y)(a.to.x) = '.'
-    g(a.over.y)(a.over.x) = 'o'
   }
 
   val cloneGrid: Grid => Grid = _.map(_.clone())
