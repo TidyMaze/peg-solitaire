@@ -135,9 +135,22 @@ object Main {
     j <- (0 until map.size)
   } yield Coord(j, i)
 
-  def won(g: Grid) = score(g) == 1 && g(3)(3) == 'o'
-
-  val score: Grid => Int = _.flatten.count(_ == 'o')
+  // fast solution check
+  def won(g: Grid): Boolean = {
+    var found = false
+    for (i <- (0 until g.size)) {
+      for (j <- (0 until g.size)) {
+        if (g(i)(j) == 'o') {
+          if (!found && i == 3 && j == 3) {
+            found = true
+          } else {
+            return false
+          }
+        }
+      }
+    }
+    return found
+  }
 
   val playAction = (g: Grid, a: Action) => {
     val resG = cloneGrid(g)
