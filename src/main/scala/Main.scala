@@ -115,11 +115,16 @@ object Main {
 
   val showGrid: Grid => String = g => {
     val sb = new StringBuilder()
-    for(i <- 0 until g.size){
-      for(j <- 0 until g.head.size){
+    var i = 0
+    var j = 0
+    while(i < g.size){
+      j = 0
+      while(j < g.head.size){
         sb.append(g(i)(j))
+        j+=1
       }
       sb.append("\n")
+      i+=1
     }
     sb.toString()
   }
