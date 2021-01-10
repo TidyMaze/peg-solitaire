@@ -8,7 +8,9 @@ object Main {
 
   case class Coord(x: Int, y: Int)
 
-  case class Action(from: Coord, to: Coord, over: Coord)
+  case class Action(from: Coord, to: Coord, over: Coord) {
+    override def toString: String = s"(${from.x}, ${from.y})->(${to.x}, ${to.y})"
+  }
 
   val offsets = Seq(Coord(0, -1), Coord(0, 1), Coord(-1, 0), Coord(1, 0))
 
