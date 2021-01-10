@@ -68,7 +68,6 @@ object Main {
     }
 
     val hash = hashGrid(map)
-
     val current = seen.getOrElse(hash, 0)
     seen.update(hash, current + 1)
 
@@ -113,7 +112,7 @@ object Main {
     }
   }
 
-  val showGrid: Grid => String = g => {
+  def showGrid(g: Grid): String = {
     val sb = new StringBuilder()
     var i = 0
     var j = 0
