@@ -16,3 +16,5 @@ SUCCESS 9747!
 ##...##
 ##...##
 ```
+
+Current speed after micro-optim: 2 000 000 state/s (one state is a game node, can be leaf as well).
