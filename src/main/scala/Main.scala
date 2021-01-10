@@ -81,9 +81,13 @@ object Main {
 
   def getEventualAction(map: Grid, originCoord: Coord, direction: Coord): Option[Action] = {
     val jumpedCoord = addOffset(originCoord, direction)
-    val landingCoord = addOffset(jumpedCoord, direction)
-    if (hasPeg(map, jumpedCoord) && isFree(map, landingCoord)) {
-      Some(Action(originCoord, landingCoord, jumpedCoord))
+    if (hasPeg(map, jumpedCoord)){
+      val landingCoord = addOffset(jumpedCoord, direction)
+      if(isFree(map, landingCoord)) {
+        Some(Action(originCoord, landingCoord, jumpedCoord))
+      } else {
+        None
+      }
     } else {
       None
     }
