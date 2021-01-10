@@ -1,4 +1,5 @@
 import java.time.Instant
+import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 import scala.language.postfixOps
 
@@ -11,6 +12,8 @@ object Main {
   case class Action(from: Coord, to: Coord, over: Coord) {
     override def toString: String = s"(${from.x}, ${from.y})->(${to.x}, ${to.y})"
   }
+  
+  val PurgeTrigger = 100000
 
   val offsets = Seq(Coord(0, -1), Coord(0, 1), Coord(-1, 0), Coord(1, 0))
 
@@ -38,7 +41,7 @@ object Main {
   }
 
   // avoid avaluating an already-met state
-  val seen: scala.collection.mutable.Set[Int] = scala.collection.mutable.Set.empty[Int]
+  var seen: mutable.HashMap[Int, Int] = mutable.HashMap[Int, Int]()
   var countsWins = 0
   var countsSeen = 0
   var best = 35
@@ -50,9 +53,18 @@ object Main {
 
   def solveGrid(coordsInMap: Seq[Coord], map: Grid, hist: ListBuffer[Action]): Unit = {
     countNodes += 1
-    if ((countNodes % 100000) == 0) {
+    if ((seen.size % PurgeTrigger) == 0) {
       val elapsedMillis = Instant.now().toEpochMilli - start.toEpochMilli
       println(s"Speed: ${countNodes / elapsedMillis}K op/s out of ${countNodes / 1000}K nodes. Count seen ${countsSeen / 1000}K out of ${seen.size / 1000}K nodes")
+      
+      if(seen.size > 0) {
+
+        val keep = PurgeTrigger / 2
+
+        val sorted = seen.toSeq.sortBy(_._2)(Ordering.Int.reverse)
+        seen = mutable.HashMap(sorted.take(keep):_*)
+        println(seen.size)
+      }
     }
     
     val hash = hashGrid(map)
@@ -62,7 +74,8 @@ object Main {
       return
     }
 
-    seen.add(hash)
+    val current = seen.getOrElse(hash, 0)
+    seen.update(hash, current + 1)
 
     if (won(map)) {
       countsWins += 1
