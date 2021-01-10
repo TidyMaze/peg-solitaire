@@ -84,31 +84,22 @@ object Main {
       coordsInMap.foreach { originCoord =>
         if(hasPeg(map, originCoord)) {
           offsets.foreach { o =>
-            getEventualAction(map, originCoord, o) foreach { a =>
-              playActionMut(map, a)
-              hist.addOne(a)
-              solveGrid(coordsInMap, map, hist)
-              revertActionMut(map, a)
-              hist.remove(hist.size - 1)
-              // solveGrid(coordsInMap, playAction(map, a))              
+            val jumpedCoord = addOffset(originCoord, o)
+            if (inMap(map, jumpedCoord) && hasPeg(map, jumpedCoord)) {
+              val landingCoord = addOffset(jumpedCoord, o)
+              if (isFree(map, landingCoord)) {
+                val a = Action(originCoord, landingCoord, jumpedCoord)
+                playActionMut(map, a)
+                hist.addOne(a)
+                solveGrid(coordsInMap, map, hist)
+                revertActionMut(map, a)
+                hist.remove(hist.size - 1)
+                // solveGrid(coordsInMap, playAction(map, a))
+              }
             }
           }
         }
       }
-    }
-  }
-
-  def getEventualAction(map: Grid, originCoord: Coord, direction: Coord): Option[Action] = {
-    val jumpedCoord = addOffset(originCoord, direction)
-    if (inMap(map, jumpedCoord) && hasPeg(map, jumpedCoord)) {
-      val landingCoord = addOffset(jumpedCoord, direction)
-      if (isFree(map, landingCoord)) {
-        Some(Action(originCoord, landingCoord, jumpedCoord))
-      } else {
-        None
-      }
-    } else {
-      None
     }
   }
 
