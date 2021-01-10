@@ -71,7 +71,7 @@ object Main {
 
     val current = seen.getOrElse(hash, 0)
     seen.update(hash, current + 1)
-    
+
     if (current > 0) {
       countsSeen += 1
       return
@@ -113,7 +113,16 @@ object Main {
     }
   }
 
-  val showGrid: Grid => String = _.map(_.mkString("")).mkString("\n")
+  val showGrid: Grid => String = g => {
+    val sb = new StringBuilder()
+    g.foreach { l =>
+      l.foreach { c =>
+        sb.append(c)
+      }
+      sb.append("\n")
+    }
+    sb.toString()
+  }
   val printGrid = showGrid andThen println andThen (_ => println)
 
   val allCoords = (map: Grid) => for {
