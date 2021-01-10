@@ -12,7 +12,7 @@ object Main {
   case class Action(from: Coord, to: Coord, over: Coord) {
     override def toString: String = s"(${from.x}, ${from.y})->(${to.x}, ${to.y})"
   }
-  
+
   val PurgeTrigger = 100000
 
   val offsets = Seq(Coord(0, -1), Coord(0, 1), Coord(-1, 0), Coord(1, 0))
@@ -56,26 +56,26 @@ object Main {
     if ((seen.size % PurgeTrigger) == 0) {
       val elapsedMillis = Instant.now().toEpochMilli - start.toEpochMilli
       println(s"Speed: ${countNodes / elapsedMillis}K op/s out of ${countNodes / 1000}K nodes. Count seen ${countsSeen / 1000}K out of ${seen.size / 1000}K nodes")
-      
+
       if(seen.size > 0) {
 
         val keep = PurgeTrigger / 2
 
         val sorted = seen.toSeq.sortBy(_._2)(Ordering.Int.reverse)
         seen = mutable.HashMap(sorted.take(keep):_*)
-        println(seen.size)
+        println(seen.size + " and best " + sorted.head._2)
       }
     }
-    
-    val hash = hashGrid(map)
 
-    if (seen.contains(hash)) {
-      countsSeen += 1
-      return
-    }
+    val hash = hashGrid(map)
 
     val current = seen.getOrElse(hash, 0)
     seen.update(hash, current + 1)
+    
+    if (current > 0) {
+      countsSeen += 1
+      return
+    }
 
     if (won(map)) {
       countsWins += 1
