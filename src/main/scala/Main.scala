@@ -57,24 +57,24 @@ object Main {
       val elapsedMillis = Instant.now().toEpochMilli - start.toEpochMilli
       println(s"Speed: ${countNodes / elapsedMillis}K op/s out of ${countNodes / 1000}K nodes. Count seen ${countsSeen / 1000}K out of ${seen.size / 1000}K nodes")
 
-//      if(seen.size > 0) {
-//
-//        val keep = PurgeTrigger / 2
-//
-//        val sorted = seen.toSeq.sortBy(_._2)(Ordering.Int.reverse)
-//        seen = mutable.HashMap(sorted.take(keep):_*)
-//        println(seen.size + " and best " + sorted.head._2)
-//      }
+      //      if(seen.size > 0) {
+      //
+      //        val keep = PurgeTrigger / 2
+      //
+      //        val sorted = seen.toSeq.sortBy(_._2)(Ordering.Int.reverse)
+      //        seen = mutable.HashMap(sorted.take(keep):_*)
+      //        println(seen.size + " and best " + sorted.head._2)
+      //      }
     }
 
-//    val hash = hashGrid(map)
-//    val current = seen.getOrElse(hash, 0)
-//    seen.update(hash, current + 1)
-//
-//    if (current > 0) {
-//      countsSeen += 1
-//      return
-//    }
+    //    val hash = hashGrid(map)
+    //    val current = seen.getOrElse(hash, 0)
+    //    seen.update(hash, current + 1)
+    //
+    //    if (current > 0) {
+    //      countsSeen += 1
+    //      return
+    //    }
 
     if (won(map)) {
       countsWins += 1
@@ -92,7 +92,7 @@ object Main {
         hist.addOne(a)
         solveGrid(coordsInMap, map, hist)
         revertActionMut(map, a)
-        hist.remove(hist.size-1)
+        hist.remove(hist.size - 1)
         // solveGrid(coordsInMap, playAction(map, a))
       }
     }
@@ -100,9 +100,9 @@ object Main {
 
   def getEventualAction(map: Grid, originCoord: Coord, direction: Coord): Option[Action] = {
     val jumpedCoord = addOffset(originCoord, direction)
-    if (hasPeg(map, jumpedCoord)){
+    if (hasPeg(map, jumpedCoord)) {
       val landingCoord = addOffset(jumpedCoord, direction)
-      if(isFree(map, landingCoord)) {
+      if (isFree(map, landingCoord)) {
         Some(Action(originCoord, landingCoord, jumpedCoord))
       } else {
         None
@@ -116,17 +116,18 @@ object Main {
     val sb = new StringBuilder()
     var i = 0
     var j = 0
-    while(i < g.size){
+    while (i < g.size) {
       j = 0
-      while(j < g.head.size){
+      while (j < g.head.size) {
         sb.append(g(i)(j))
-        j+=1
+        j += 1
       }
       sb.append("\n")
-      i+=1
+      i += 1
     }
     sb.toString()
   }
+
   val printGrid = showGrid andThen println andThen (_ => println)
 
   val allCoords = (map: Grid) => for {
@@ -134,7 +135,7 @@ object Main {
     j <- (0 until map.size)
   } yield Coord(j, i)
 
-  def won(g: Grid) = score(g) == 1 && g(3)(3) == 'o' 
+  def won(g: Grid) = score(g) == 1 && g(3)(3) == 'o'
 
   val score: Grid => Int = _.flatten.count(_ == 'o')
 
