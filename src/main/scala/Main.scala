@@ -115,9 +115,9 @@ object Main {
 
   val showGrid: Grid => String = g => {
     val sb = new StringBuilder()
-    g.foreach { l =>
-      l.foreach { c =>
-        sb.append(c)
+    for(i <- 0 until g.size){
+      for(j <- 0 until g.head.size){
+        sb.append(g(i)(j))
       }
       sb.append("\n")
     }
