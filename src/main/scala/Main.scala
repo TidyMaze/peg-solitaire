@@ -178,11 +178,11 @@ object Main {
 
   val cloneGrid: Grid => Grid = _.map(_.clone())
 
-  val isFree = (map: Grid, c: Coord) => inMap(map, c) && map(c.y)(c.x) == '.'
+  def isFree(map: Grid, c: Coord) = inMap(map, c) && map(c.y)(c.x) == '.'
 
-  val hasPeg = (map: Grid, c: Coord) => map(c.y)(c.x) == 'o'
+  def hasPeg(map: Grid, c: Coord) = map(c.y)(c.x) == 'o'
 
   def addOffset(coord: Coord, offset: Coord) = Coord(coord.x + offset.x, coord.y + offset.y)
 
-  val inMap = (map: Grid, c: Coord) => c.x >= 0 && c.x < map.size && c.y >= 0 && c.y < map.size
+  def inMap(map: Grid, c: Coord) = c.x >= 0 && c.x < map.size && c.y >= 0 && c.y < map.size
 }
