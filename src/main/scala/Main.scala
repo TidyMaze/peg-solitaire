@@ -96,7 +96,7 @@ object Main {
       println(s"SUCCESS ${countsWins}: ${hist.mkString(",")}")
     } else {
       coordsInMap.foreach { originCoord =>
-        if(hasPeg(map, originCoord)) {
+        if (hasPeg(map, originCoord)) {
           offsets.foreach { o =>
             val jumpedCoord = addOffset(originCoord, o)
             if (inMap(map, jumpedCoord) && hasPeg(map, jumpedCoord)) {
@@ -107,18 +107,18 @@ object Main {
                 map(originCoord.y)(originCoord.x) = '.'
                 map(landingCoord.y)(landingCoord.x) = 'o'
                 map(jumpedCoord.y)(jumpedCoord.x) = '.'
-                
+
                 // add history
                 hist.addOne(a)
-                
+
                 // solve recursively
                 solveGrid(coordsInMap, map, hist)
-                
+
                 // revert action
                 map(originCoord.y)(originCoord.x) = 'o'
                 map(landingCoord.y)(landingCoord.x) = '.'
                 map(jumpedCoord.y)(jumpedCoord.x) = 'o'
-                
+
                 // revert history
                 hist.remove(hist.size - 1)
                 // solveGrid(coordsInMap, playAction(map, a))
