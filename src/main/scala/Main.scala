@@ -10,7 +10,7 @@ object Main {
   case class Coord(x: Int, y: Int)
 
   case class Action(from: Coord, to: Coord, over: Coord) {
-    override def toString: String = s"${from.x},${from.y}-${to.x},${to.y}"
+    override def toString: String = s"${from.x}x${from.y}-${to.x}x${to.y}"
   }
 
   val PurgeTrigger = 1000000
@@ -79,7 +79,7 @@ object Main {
     if (won(map)) {
       countsWins += 1
       printGrid(map)
-      println(s"SUCCESS ${countsWins}: ${hist}")
+      println(s"SUCCESS ${countsWins}: ${hist.mkString(",")}")
     } else {
       coordsInMap.foreach { originCoord =>
         if(hasPeg(map, originCoord)) {
