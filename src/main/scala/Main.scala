@@ -81,19 +81,19 @@ object Main {
       printGrid(map)
       println(s"SUCCESS ${countsWins}: ${hist}")
     } else {
-      val playable = coordsInMap.flatMap {
-        case originCoord if hasPeg(map, originCoord) =>
-          offsets.flatMap(getEventualAction(map, originCoord, _))
-        case _ => Nil
-      }
-
-      playable foreach { a =>
-        playActionMut(map, a)
-        hist.addOne(a)
-        solveGrid(coordsInMap, map, hist)
-        revertActionMut(map, a)
-        hist.remove(hist.size - 1)
-        // solveGrid(coordsInMap, playAction(map, a))
+      coordsInMap.foreach { originCoord =>
+        if(hasPeg(map, originCoord)) {
+          offsets.foreach { o =>
+            getEventualAction(map, originCoord, o) foreach { a =>
+              playActionMut(map, a)
+              hist.addOne(a)
+              solveGrid(coordsInMap, map, hist)
+              revertActionMut(map, a)
+              hist.remove(hist.size - 1)
+              // solveGrid(coordsInMap, playAction(map, a))              
+            }
+          }
+        }
       }
     }
   }
