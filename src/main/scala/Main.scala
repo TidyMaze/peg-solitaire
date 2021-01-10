@@ -170,7 +170,7 @@ object Main {
 
   val hasPeg = (map: Grid, c: Coord) => map(c.y)(c.x) == 'o'
 
-  val addOffset = (coord: Coord, offset: Coord) => Coord(coord.x + offset.x, coord.y + offset.y)
+  def addOffset(coord: Coord, offset: Coord) = Coord(coord.x + offset.x, coord.y + offset.y)
 
   val inMap = (map: Grid, c: Coord) => c.x >= 0 && c.x < map.size && c.y >= 0 && c.y < map.size
 }
