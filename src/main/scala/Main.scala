@@ -54,13 +54,15 @@ object Main {
       val elapsedMillis = Instant.now().toEpochMilli - start.toEpochMilli
       println(s"Speed: ${countNodes / elapsedMillis}K op/s out of ${countNodes / 1000}K nodes. Count seen ${countsSeen / 1000}K out of ${seen.size / 1000}K nodes")
     }
+    
+    val hash = hashGrid(map)
 
-    if (seen.contains(hashGrid(map))) {
+    if (seen.contains(hash)) {
       countsSeen += 1
       return
     }
 
-    seen.add(hashGrid(map))
+    seen.add(hash)
 
     if (won(map)) {
       countsWins += 1
