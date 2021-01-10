@@ -1,4 +1,5 @@
 import java.time.Instant
+import scala.collection.mutable.ListBuffer
 import scala.language.postfixOps
 
 object Main {
@@ -31,7 +32,7 @@ object Main {
 
     val coordsInMap = allCoords(map)
 
-    solveGrid(coordsInMap, map)
+    solveGrid(coordsInMap, map, ListBuffer())
   }
 
   // avoid avaluating an already-met state
@@ -45,7 +46,7 @@ object Main {
 
   def hashGrid(g: Grid) = showGrid(g).hashCode()
 
-  def solveGrid(coordsInMap: Seq[Coord], map: Grid): Unit = {
+  def solveGrid(coordsInMap: Seq[Coord], map: Grid, hist: ListBuffer[Action]): Unit = {
     countNodes += 1
     if ((countNodes % 100000) == 0) {
       val elapsedMillis = Instant.now().toEpochMilli - start.toEpochMilli
@@ -62,7 +63,7 @@ object Main {
     if (won(map)) {
       countsWins += 1
       printGrid(map)
-      println(s"SUCCESS ${countsWins}!")
+      println(s"SUCCESS ${countsWins}: ${hist}")
     } else {
       val playable = coordsInMap.view.flatMap {
         case originCoord if hasPeg(map, originCoord) =>
@@ -72,8 +73,10 @@ object Main {
 
       playable foreach { a =>
         playActionMut(map, a)
-        solveGrid(coordsInMap, map)
+        hist.addOne(a)
+        solveGrid(coordsInMap, map, hist)
         revertActionMut(map, a)
+        hist.remove(hist.size-1)
         // solveGrid(coordsInMap, playAction(map, a))
       }
     }
