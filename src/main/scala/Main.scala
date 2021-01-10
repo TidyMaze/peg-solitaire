@@ -134,7 +134,7 @@ object Main {
     j <- (0 until map.size)
   } yield Coord(j, i)
 
-  val won: Grid => Boolean = score(_) == 1
+  def won(g: Grid) = score(g) == 1 && g(3)(3) == 'o' 
 
   val score: Grid => Int = _.flatten.count(_ == 'o')
 
