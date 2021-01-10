@@ -10,7 +10,7 @@ object Main {
   case class Coord(x: Int, y: Int)
 
   case class Action(from: Coord, to: Coord, over: Coord) {
-    override def toString: String = s"(${from.x}, ${from.y})->(${to.x}, ${to.y})"
+    override def toString: String = s"${from.x},${from.y}-${to.x},${to.y}"
   }
 
   val PurgeTrigger = 1000000
