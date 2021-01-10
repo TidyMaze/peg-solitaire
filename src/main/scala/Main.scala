@@ -13,7 +13,7 @@ object Main {
     override def toString: String = s"(${from.x}, ${from.y})->(${to.x}, ${to.y})"
   }
 
-  val PurgeTrigger = 100000
+  val PurgeTrigger = 1000000
 
   val offsets = Seq(Coord(0, -1), Coord(0, 1), Coord(-1, 0), Coord(1, 0))
 
@@ -100,7 +100,7 @@ object Main {
 
   def getEventualAction(map: Grid, originCoord: Coord, direction: Coord): Option[Action] = {
     val jumpedCoord = addOffset(originCoord, direction)
-    if (hasPeg(map, jumpedCoord)) {
+    if (inMap(map, jumpedCoord) && hasPeg(map, jumpedCoord)) {
       val landingCoord = addOffset(jumpedCoord, direction)
       if (isFree(map, landingCoord)) {
         Some(Action(originCoord, landingCoord, jumpedCoord))
@@ -176,7 +176,7 @@ object Main {
 
   val isFree = (map: Grid, c: Coord) => inMap(map, c) && map(c.y)(c.x) == '.'
 
-  val hasPeg = (map: Grid, c: Coord) => inMap(map, c) && map(c.y)(c.x) == 'o'
+  val hasPeg = (map: Grid, c: Coord) => map(c.y)(c.x) == 'o'
 
   val addOffset = (coord: Coord, offset: Coord) => Coord(coord.x + offset.x, coord.y + offset.y)
 
