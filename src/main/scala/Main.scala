@@ -46,7 +46,7 @@ object Main {
   var countsSeen = 0
   var best = 35
 
-  var countNodes = 0
+  var countNodes = 0L
   var start = Instant.now()
 
   def hashGrid(g: Grid) = {
@@ -66,7 +66,7 @@ object Main {
   }
 
   def solveGrid(coordsInMap: Seq[Coord], map: Grid, hist: ListBuffer[Action]): Unit = {
-    countNodes += 1
+    countNodes += 1L
     if ((countNodes % PurgeTrigger) == 0) {
       val elapsedMillis = Instant.now().toEpochMilli - start.toEpochMilli
       println(s"Speed: ${countNodes / elapsedMillis}K op/s out of ${countNodes / 1000}K nodes. ${countsWins} solutions so far.")
