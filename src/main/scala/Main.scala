@@ -69,7 +69,7 @@ object Main {
     countNodes += 1
     if ((countNodes % PurgeTrigger) == 0) {
       val elapsedMillis = Instant.now().toEpochMilli - start.toEpochMilli
-      println(s"Speed: ${countNodes / elapsedMillis}K op/s out of ${countNodes / 1000}K nodes. Count seen ${countsSeen / 1000}K out of ${seen.size / 1000}K nodes")
+      println(s"Speed: ${countNodes / elapsedMillis}K op/s out of ${countNodes / 1000}K nodes. ${countsWins} solutions so far.")
 
       //      if(seen.size > 0) {
       //
