@@ -100,6 +100,7 @@ object Main {
     if (won(map)) {
       countsWins += 1
       println(s"SOLUTION ${countsWins}: ${hist.mkString(",")}")
+      println("")
       println(generateDisplayBoardSteps(englishMap, hist.toSeq))
       println("")
     } else {
