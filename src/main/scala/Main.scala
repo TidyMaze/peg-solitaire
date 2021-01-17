@@ -17,27 +17,26 @@ object Main {
 
   val offsets = Seq(Coord(0, -1), Coord(0, 1), Coord(-1, 0), Coord(1, 0))
 
+  val englishMapRaw =
+    """##ooo##
+      |##ooo##
+      |ooooooo
+      |ooo.ooo
+      |ooooooo
+      |##ooo##
+      |##ooo##""".stripMargin
+
+  val englishMap: Seq[Seq[Char]] = englishMapRaw.split("\n").map(_.toIndexedSeq).toSeq
+  
   def main(args: Array[String]): Unit = {
-
-    val englishMapRaw =
-      """##ooo##
-        |##ooo##
-        |ooooooo
-        |ooooooo
-        |ooooooo
-        |##ooo##
-        |##ooo##""".stripMargin
-
-    val map = englishMapRaw.split("\n").map(_.toCharArray)
-
+    
+    //    printGrid(map)
+    
     //    printGrid(map)
 
-    map(3)(3) = '.'
-    //    printGrid(map)
+    val coordsInMap = allCoords(englishMap)
 
-    val coordsInMap = allCoords(map)
-
-    solveGrid(coordsInMap, map, ListBuffer())
+    solveGrid(coordsInMap, englishMap.map(_.toArray).toArray, ListBuffer())
   }
 
   // avoid avaluating an already-met state
@@ -63,6 +62,12 @@ object Main {
     }
     sb.toString()
     sb.hashCode()
+  }
+  
+  def generateDisplayBoardSteps(map: Seq[Seq[Char]], hist: Seq[Action]): String = {
+    val mutableMap = map.map(_.toArray).toArray
+    val steps: Seq[Grid] = hist.scanLeft(mutableMap)(playAction)
+    (0 until map.length).map(i => steps.map(_(i).mkString("")).mkString(" ")).mkString("\n")
   }
 
   def solveGrid(coordsInMap: Seq[Coord], map: Grid, hist: ListBuffer[Action]): Unit = {
@@ -92,8 +97,9 @@ object Main {
 
     if (won(map)) {
       countsWins += 1
-      printGrid(map)
-      println(s"SUCCESS ${countsWins}: ${hist.mkString(",")}")
+      println(s"SOLUTION ${countsWins}: ${hist.mkString(",")}")
+      println(generateDisplayBoardSteps(englishMap, hist.toSeq))
+      println("")
     } else {
       coordsInMap.foreach { originCoord =>
         if (hasPeg(map, originCoord)) {
@@ -146,7 +152,7 @@ object Main {
     println(sb.toString())
   }
 
-  val allCoords = (map: Grid) => for {
+  val allCoords = (map: IterableOnce[IterableOnce[Char]]) => for {
     i <- (0 until map.size)
     j <- (0 until map.size)
   } yield Coord(j, i)
