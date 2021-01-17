@@ -14,6 +14,7 @@ object Main {
   }
 
   val PurgeTrigger = 1000000
+  val MaxSolutions = 1000
 
   val offsets = Seq(Coord(0, -1), Coord(0, 1), Coord(-1, 0), Coord(1, 0))
 
@@ -71,10 +72,11 @@ object Main {
   }
 
   def solveGrid(coordsInMap: Seq[Coord], map: Grid, hist: ListBuffer[Action]): Unit = {
+    if(countsWins >= MaxSolutions) return
     countNodes += 1L
     if ((countNodes % PurgeTrigger) == 0) {
       val elapsedMillis = Instant.now().toEpochMilli - start.toEpochMilli
-      println(s"Speed: ${countNodes / elapsedMillis}K op/s out of ${countNodes / 1000}K nodes. ${countsWins} solutions so far.")
+//      println(s"Speed: ${countNodes / elapsedMillis}K op/s out of ${countNodes / 1000}K nodes. ${countsWins} solutions so far.")
 
       //      if(seen.size > 0) {
       //
