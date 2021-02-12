@@ -2,6 +2,7 @@ import java.time.Instant
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 import scala.language.postfixOps
+import scala.util.Random
 
 object Main {
 
@@ -30,18 +31,12 @@ object Main {
   val englishMap: Seq[Seq[Char]] = englishMapRaw.split("\n").map(_.toIndexedSeq).toSeq
   
   def main(args: Array[String]): Unit = {
-    
-    //    printGrid(map)
-    
-    //    printGrid(map)
-
     val coordsInMap = allCoords(englishMap)
-
     solveGrid(coordsInMap, englishMap.map(_.toArray).toArray, ListBuffer())
   }
 
   // avoid avaluating an already-met state
-  var seen: mutable.HashMap[Int, Int] = mutable.HashMap[Int, Int]()
+  var seen: mutable.HashSet[Long] = mutable.HashSet[Long]()
   var countsWins = 0
   var countsSeen = 0
   var best = 35
@@ -49,60 +44,55 @@ object Main {
   var countNodes = 0L
   var start = Instant.now()
 
-  def hashGrid(g: Grid) = {
-    val sb = new StringBuilder()
-    var i = 0
-    var j = 0
-    while (i < g.size) {
-      j = 0
-      while (j < g.head.size) {
-        sb.append(g(i)(j))
-        j += 1
-      }
-      i += 1
-    }
-    sb.toString()
-    sb.hashCode()
+  val zobristKeys = englishMap.map { l =>
+    l.map(c =>
+      Random.nextLong()
+    )
   }
   
+  println(s"zobrist keys: $zobristKeys")
+
+  def zobrist(g: Grid) = {
+    var res: Long = 0
+    (0 until 7).foreach { i =>
+      (0 until 7).foreach { j =>
+        if(g(i)(j) == 'o'){
+          res ^= zobristKeys(i)(j)
+        }
+      }
+    }
+    res
+  }
+  
+  def hashGrid(g: Grid) = zobrist(g)
+
   def generateDisplayBoardSteps(map: Seq[Seq[Char]], hist: Seq[Action]): String = {
     val mutableMap = map.map(_.toArray).toArray
     val steps: Seq[Grid] = hist.scanLeft(mutableMap)(playAction)
-    (0 until map.length).map(i => steps.map(_(i).mkString("")).mkString(" ")).mkString("\n")
+    (0 until map.length).map(i => steps.map(_ (i).mkString("")).mkString(" ")).mkString("\n")
   }
 
   def solveGrid(coordsInMap: Seq[Coord], map: Grid, hist: ListBuffer[Action]): Unit = {
-    if(countsWins >= MaxSolutions) return
     countNodes += 1L
     if ((countNodes % PurgeTrigger) == 0) {
       val elapsedMillis = Instant.now().toEpochMilli - start.toEpochMilli
-//      println(s"Speed: ${countNodes / elapsedMillis}K op/s out of ${countNodes / 1000}K nodes. ${countsWins} solutions so far.")
-
-      //      if(seen.size > 0) {
-      //
-      //        val keep = PurgeTrigger / 2
-      //
-      //        val sorted = seen.toSeq.sortBy(_._2)(Ordering.Int.reverse)
-      //        seen = mutable.HashMap(sorted.take(keep):_*)
-      //        println(seen.size + " and best " + sorted.head._2)
-      //      }
+      println(s"Speed: ${countNodes / elapsedMillis}K op/s out of ${countNodes / 1000}K nodes. ${countsWins} solutions so far. Seen ${seen.size}. Count seen ${countsSeen}")
     }
 
-    //    val hash = hashGrid(map)
-    //    val current = seen.getOrElse(hash, 0)
-    //    seen.update(hash, current + 1)
-    //
-    //    if (current > 0) {
-    //      countsSeen += 1
-    //      return
-    //    }
+    val hash = hashGrid(map)
+    val alreadySeen = seen.contains(hash)
+
+    if (alreadySeen) {
+      countsSeen += 1
+      return
+    } else {
+      seen.addOne(hash)
+//      println(seen.knownSize)
+    }
 
     if (won(map)) {
       countsWins += 1
-      println(s"SOLUTION ${countsWins}: ${hist.mkString(",")}")
-      println("")
-      println(generateDisplayBoardSteps(englishMap, hist.toSeq))
-      println("")
+      println(s"SOLUTION ${countsWins}")
     } else {
       coordsInMap.foreach { originCoord =>
         if (hasPeg(map, originCoord)) {
