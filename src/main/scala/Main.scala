@@ -1,7 +1,7 @@
 import java.time.Instant
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
-import scala.language.postfixOps
+import scala.language.{dynamics, postfixOps}
 import scala.util.Random
 
 object Main {
@@ -56,15 +56,65 @@ object Main {
     var res: Long = 0
     (0 until 7).foreach { i =>
       (0 until 7).foreach { j =>
-        if(g(i)(j) == 'o'){
+        if (g(i)(j) == 'o') {
           res ^= zobristKeys(i)(j)
         }
       }
     }
     res
   }
-  
+
   def hashGrid(g: Grid) = zobrist(g)
+
+  def verticalMirror(g: Grid) = {
+    var res = Array.ofDim[Char](g.size, g.size)
+    (0 until g.size).foreach { i =>
+      (0 until g.size).foreach { j =>
+        res(i)(g.size - j - 1) = g(i)(j)
+      }
+    }
+    res.toArray
+  }
+
+  def horizontalMirror(g: Grid) = {
+    var res = Array.ofDim[Char](g.size, g.size)
+    (0 until g.size).foreach { i =>
+      (0 until g.size).foreach { j =>
+        res(g.size - i - 1)(j) = g(i)(j)
+      }
+    }
+    res.toArray
+  }
+
+  def rotate90(g: Grid) = {
+    var res = Array.ofDim[Char](g.size, g.size)
+    (0 until g.size).foreach { i =>
+      (0 until g.size).foreach { j =>
+        res(i)(j) = g(g.size - j - 1)(i)
+      }
+    }
+    res.toArray
+  }
+
+  def rotate180(g: Grid) = {
+    var res = Array.ofDim[Char](g.size, g.size)
+    (0 until g.size).foreach { i =>
+      (0 until g.size).foreach { j =>
+        res(i)(j) = g(g.size - i - 1)(g.size - j - 1)
+      }
+    }
+    res.toArray
+  }
+
+  def rotate270(g: Grid) = {
+    var res = Array.ofDim[Char](g.size, g.size)
+    (0 until g.size).foreach { i =>
+      (0 until g.size).foreach { j =>
+        res(i)(j) = g(j)(g.size - i - 1)
+      }
+    }
+    res.toArray
+  }
 
   def generateDisplayBoardSteps(map: Seq[Seq[Char]], hist: Seq[Action]): String = {
     val mutableMap = map.map(_.toArray).toArray
@@ -86,8 +136,23 @@ object Main {
       countsSeen += 1
       return
     } else {
-      seen.addOne(hash)
-//      println(seen.knownSize)
+      val hm = horizontalMirror(map)
+      val vm = verticalMirror(map)
+      seen.addAll(Seq(
+        hash,
+        hashGrid(hm),
+        hashGrid(vm),
+        hashGrid(rotate90(map)),
+        hashGrid(rotate90(hm)),
+        hashGrid(rotate90(vm)),
+        hashGrid(rotate180(map)),
+        hashGrid(rotate180(hm)),
+        hashGrid(rotate180(vm)),
+        hashGrid(rotate270(map)),
+        hashGrid(rotate270(hm)),
+        hashGrid(rotate270(vm)),
+      ))
+      //      println(seen.knownSize)
     }
 
     if (won(map)) {
