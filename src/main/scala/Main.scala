@@ -28,16 +28,16 @@ object Main {
       |##ooo##
       |##ooo##""".stripMargin
 
-  val englishMap: Seq[Seq[Char]] = englishMapRaw.split("\n").map(_.toIndexedSeq).toSeq
-  
+  val englishMap: IndexedSeq[IndexedSeq[Char]] = englishMapRaw.split("\n").map(_.toIndexedSeq).toIndexedSeq
+
   def main(args: Array[String]): Unit = {
     val coordsInMap = allCoords(englishMap)
     solveGrid(coordsInMap, englishMap.map(_.toArray).toArray, ListBuffer())
   }
 
   // avoid avaluating an already-met state
-  var seen: mutable.HashSet[Long] = mutable.HashSet[Long]()
-  var countsWins = 0
+  var solutionCount: mutable.HashMap[Long, Long] = mutable.HashMap[Long, Long]()
+  var countsWins: Long = 0
   var countsSeen = 0
   var best = 35
 
@@ -54,12 +54,17 @@ object Main {
 
   def zobrist(g: Grid) = {
     var res: Long = 0
-    (0 until 7).foreach { i =>
-      (0 until 7).foreach { j =>
+    var i = 0
+    var j = 0
+    while (i < 7) {
+      j = 0
+      while (j < 7) {
         if (g(i)(j) == 'o') {
           res ^= zobristKeys(i)(j)
         }
+        j += 1
       }
+      i += 1
     }
     res
   }
@@ -68,52 +73,77 @@ object Main {
 
   def verticalMirror(g: Grid) = {
     var res = Array.ofDim[Char](g.size, g.size)
-    (0 until g.size).foreach { i =>
-      (0 until g.size).foreach { j =>
+    var i = 0
+    var j = 0
+    while (i < 7) {
+      j = 0
+      while (j < 7) {
         res(i)(g.size - j - 1) = g(i)(j)
+        j += 1
       }
+      i += 1
     }
-    res.toArray
+    res
   }
 
   def horizontalMirror(g: Grid) = {
     var res = Array.ofDim[Char](g.size, g.size)
-    (0 until g.size).foreach { i =>
-      (0 until g.size).foreach { j =>
+    var i = 0
+    var j = 0
+    while (i < 7) {
+      j = 0
+      while (j < 7) {
         res(g.size - i - 1)(j) = g(i)(j)
+        j += 1
       }
+      i += 1
     }
-    res.toArray
+    res
   }
 
   def rotate90(g: Grid) = {
     var res = Array.ofDim[Char](g.size, g.size)
-    (0 until g.size).foreach { i =>
-      (0 until g.size).foreach { j =>
+    var i = 0
+    var j = 0
+    while (i < 7) {
+      j = 0
+      while (j < 7) {
         res(i)(j) = g(g.size - j - 1)(i)
+        j += 1
       }
+      i += 1
     }
-    res.toArray
+    res
   }
 
   def rotate180(g: Grid) = {
     var res = Array.ofDim[Char](g.size, g.size)
-    (0 until g.size).foreach { i =>
-      (0 until g.size).foreach { j =>
+    var i = 0
+    var j = 0
+    while (i < 7) {
+      j = 0
+      while (j < 7) {
         res(i)(j) = g(g.size - i - 1)(g.size - j - 1)
+        j += 1
       }
+      i += 1
     }
-    res.toArray
+    res
   }
 
   def rotate270(g: Grid) = {
     var res = Array.ofDim[Char](g.size, g.size)
-    (0 until g.size).foreach { i =>
-      (0 until g.size).foreach { j =>
+    var i = 0
+    var j = 0
+    while (i < 7) {
+      j = 0
+      while (j < 7) {
         res(i)(j) = g(j)(g.size - i - 1)
+        j += 1
       }
+      i += 1
     }
-    res.toArray
+    res
   }
 
   def generateDisplayBoardSteps(map: Seq[Seq[Char]], hist: Seq[Action]): String = {
@@ -122,43 +152,28 @@ object Main {
     (0 until map.length).map(i => steps.map(_ (i).mkString("")).mkString(" ")).mkString("\n")
   }
 
-  def solveGrid(coordsInMap: Seq[Coord], map: Grid, hist: ListBuffer[Action]): Unit = {
+  def solveGrid(coordsInMap: Seq[Coord], map: Grid, hist: ListBuffer[Action]): Long = {
     countNodes += 1L
     if ((countNodes % PurgeTrigger) == 0) {
       val elapsedMillis = Instant.now().toEpochMilli - start.toEpochMilli
-      println(s"Speed: ${countNodes / elapsedMillis}K op/s out of ${countNodes / 1000}K nodes. ${countsWins} solutions so far. Seen ${seen.size}. Count seen ${countsSeen}")
+      println(s"Speed: ${countNodes / elapsedMillis}K op/s tout of ${countNodes / 1000}K nodes.\t${countsWins} solutions so far (${countsWins / elapsedMillis}K solution/s).\tSeen ${solutionCount.size}.\tCount seen ${countsSeen}")
     }
 
     val hash = hashGrid(map)
-    val alreadySeen = seen.contains(hash)
+    val storedSolutions = solutionCount.get(hash)
 
-    if (alreadySeen) {
+    if (storedSolutions.isDefined) {
       countsSeen += 1
-      return
-    } else {
-      val hm = horizontalMirror(map)
-      val vm = verticalMirror(map)
-      seen.addAll(Seq(
-        hash,
-        hashGrid(hm),
-        hashGrid(vm),
-        hashGrid(rotate90(map)),
-        hashGrid(rotate90(hm)),
-        hashGrid(rotate90(vm)),
-        hashGrid(rotate180(map)),
-        hashGrid(rotate180(hm)),
-        hashGrid(rotate180(vm)),
-        hashGrid(rotate270(map)),
-        hashGrid(rotate270(hm)),
-        hashGrid(rotate270(vm)),
-      ))
-      //      println(seen.knownSize)
+      countsWins += storedSolutions.get
+      return storedSolutions.get
     }
 
     if (won(map)) {
       countsWins += 1
       println(s"SOLUTION ${countsWins}")
+      return 1
     } else {
+      var childrenSolutions: Long = 0
       coordsInMap.foreach { originCoord =>
         if (hasPeg(map, originCoord)) {
           offsets.foreach { o =>
@@ -176,7 +191,8 @@ object Main {
                 hist.addOne(a)
 
                 // solve recursively
-                solveGrid(coordsInMap, map, hist)
+                val newSolutions = solveGrid(coordsInMap, map, hist)
+                childrenSolutions += newSolutions
 
                 // revert action
                 map(originCoord.y)(originCoord.x) = 'o'
@@ -191,6 +207,24 @@ object Main {
           }
         }
       }
+
+      val hm = horizontalMirror(map)
+      val vm = verticalMirror(map)
+      solutionCount.addAll(Seq(
+        (hash, childrenSolutions),
+        (hashGrid(hm), childrenSolutions),
+        (hashGrid(vm), childrenSolutions),
+        (hashGrid(rotate90(map)), childrenSolutions),
+        (hashGrid(rotate90(hm)), childrenSolutions),
+        (hashGrid(rotate90(vm)), childrenSolutions),
+        (hashGrid(rotate180(map)), childrenSolutions),
+        (hashGrid(rotate180(hm)), childrenSolutions),
+        (hashGrid(rotate180(vm)), childrenSolutions),
+        (hashGrid(rotate270(map)), childrenSolutions),
+        (hashGrid(rotate270(hm)), childrenSolutions),
+        (hashGrid(rotate270(vm)), childrenSolutions),
+      ))
+      return childrenSolutions
     }
   }
 
